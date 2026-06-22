@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HIRE MIND AI</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    background:#081028;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+}
+
+.container{
+    width:100%;
+    max-width:900px;
+    background:#1c2942;
+    padding:30px;
+    border-radius:20px;
+}
+
+h1{
+    color:white;
+    text-align:center;
+    margin-bottom:20px;
+}
+
+textarea{
+    width:100%;
+    height:180px;
+    border:none;
+    outline:none;
+    border-radius:12px;
+    padding:20px;
+    font-size:18px;
+    resize:none;
+}
+
+button{
+    width:100%;
+    margin-top:15px;
+    padding:15px;
+    border:none;
+    border-radius:12px;
+    background:#3366e8;
+    color:white;
+    font-size:20px;
+    cursor:pointer;
+}
+
+button:hover{
+    opacity:0.9;
+}
+
+.response{
+    margin-top:20px;
+    background:#33445f;
+    color:white;
+    padding:20px;
+    border-radius:12px;
+    min-height:200px;
+    white-space:pre-wrap;
+    line-height:1.6;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>☕ Java Interview Prep AI</h1>
+
+<textarea
+id="question"
+placeholder="Ask anything about Java...
+Examples:
+What is JVM?
+Difference between HashMap and Hashtable
+Explain OOP Concepts">
+</textarea>
+
+<button onclick="askAI()">
+Ask Gemini
+</button>
+
+<div class="response" id="response">
+Your answer will appear here...
+</div>
+
+</div>
+
+<script>
+
+async function askAI(){
+
+    const question =
+    document.getElementById("question").value;
+
+    const responseBox =
+    document.getElementById("response");
+
+    if(question.trim()===""){
+        responseBox.innerText =
+        "Please enter a Java question.";
+        return;
+    }
+
+    responseBox.innerText =
+    "Thinking...";
+
+    const API_KEY =
+    "AQ.Ab8RN6LqCzqXPlQinFeGHW6tQZBgd4PhYmZg1uuerODgzDjKPA";
+
+    const prompt = `
+You are an expert AI assistant.
+
+Provide:
+
+1. Explanation
+2. Example
+3. Important Points
+
+Question:
+${question}
+`;
+
+    try{
+
+        const response = await fetch(
+            "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent",
+            {
+                method:"POST",
+                headers:{
+                    "Content-Type":"application/json",
+                    "X-goog-api-key":API_KEY
+                },
+                body:JSON.stringify({
+                    contents:[
+                        {
+                            parts:[
+                                {
+                                    text:prompt
+                                }
+                            ]
+                        }
+                    ]
+                })
+            }
+        );
+
+        const data =
+        await response.json();
+
+        console.log(data);
+
+        if(data.error){
+            responseBox.innerText =
+            "Gemini Error:\n\n" +
+            data.error.message;
+            return;
+        }
+
+        const answer =
+        data.candidates[0]
+        .content.parts[0].text;
+
+        responseBox.innerText =
+        answer;
+
+    }
+    catch(error){
+
+        console.error(error);
+
+        responseBox.innerText =
+        "Request Failed:\n\n" +
+        error.message;
+    }
+}
+
+</script>
+
+</body>
+
+</html>
